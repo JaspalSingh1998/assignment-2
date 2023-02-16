@@ -2,11 +2,12 @@ import React, {useEffect, useState} from 'react'
 import axios from 'axios'
 
 const Tools = () => {
+  const [city, setCity] = useState("barrie");
   const [weatherData, setWeatherData] = useState([]);
   const [newsFeed, setNewsFeed] = useState([]);
 
   async function getWeatherData() {
-    const response = await axios.get('https://api.openweathermap.org/data/2.5/weather?q=barrie&appId=750b011386fdd29775e397a29adb8333');
+    const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city.toLowerCase()}&appId=750b011386fdd29775e397a29adb8333`);
     setWeatherData(response.data);
   }
 
@@ -31,24 +32,24 @@ const Tools = () => {
       <section className='w-full mt-16 rounded-lg flex flex-col md:flex-row'>
         <section className='bg-[#1E3150] p-6 flex-1/2 rounded-l-lg'>
           <form className='inline'>
-            <input type="text" placeholder='Enter city name' id='cityname' className='p-4' />
-            <label htmlFor="cityname" className='bg-teal-200 py-4 px-8 ml-4 rounded-md cursor-pointer'>Search</label>
+            <input type="text" placeholder='Enter city name' id='cityname' className='p-4' value={city} onChange={(e) => setCity(e.target.value)}/>
+            <label htmlFor="cityname" className='bg-teal-200 py-4 px-8 ml-4 rounded-md cursor-pointer' onClick={getWeatherData}>Search</label>
           </form>
           <div className='mt-12 text-white'>
             <div>
               <h4 className='font-bold text-lg mb-4'>Weather Details</h4>
               <ul>
-                <li className='flex justify-between mb-4'>
-                  <p>Cloudy</p>
-                  <p>86%</p>
+                <li className='flex justify-between mb-4 items-center'>
+                  {weatherData?.weather?.length && <p className='capitalize'>{weatherData?.weather[0].description}</p>}
+                  {weatherData?.weather?.length && <img src={`http://openweathermap.org/img/w/${weatherData?.weather[0].icon}.png`} alt="Weather Condition" />}
                 </li>
-                <li className='flex justify-between mb-4'>
+                <li className='flex justify-between mb-6'>
                   <p>Humidity</p>
-                  <p>62%</p>
+                  <p>{weatherData?.main?.humidity}%</p>
                 </li>
                 <li className='flex justify-between mb-4'>
                   <p>Wind</p>
-                  <p>8km/h</p>
+                  <p>{weatherData?.wind?.speed}km/h</p>
                 </li>
               </ul>
             </div>
@@ -56,12 +57,12 @@ const Tools = () => {
         </section>
         <section className='flex-1 bg-slate-400 p-4 flex flex-col justify-end p-8'>
           <h1 className='text-9xl text-white'>
-            15 <span>&#176;</span>
+            {(weatherData?.main?.temp - 273.15).toFixed(0)} <span>&#176;</span>
           </h1>
           <div className='ml-4 mt-4 text-2xl'>
-            <p>Barrie, CA</p>
+            <p>{weatherData?.name}, {weatherData?.sys?.country}</p>
             <div>
-              <p>Saturday 11, February 2023</p>
+              <p>{}</p>
             </div>
           </div>
         </section>
